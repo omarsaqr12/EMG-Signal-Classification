@@ -1,0 +1,13 @@
+subject,filter,accuracy
+1,none,0.8
+1,highpass,0.925
+1,bandpass,0.95
+1,bandpass_notch,0.95
+2,none,0.975
+2,highpass,1.0
+2,bandpass,1.0
+2,bandpass_notch,1.0
+3,none,0.825
+3,highpass,1.0
+3,bandpass,1.0
+3,bandpass_notch,1.0

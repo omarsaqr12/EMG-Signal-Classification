@@ -1,183 +1,178 @@
-# EMG Signal Classification using KNN
+# EMG Signal Classification
 
-A Digital Signal Processing project for classifying hand movements from surface Electromyography (sEMG) signals using K-Nearest Neighbors (KNN) classification with feature extraction in both time and frequency domains.
+**Recognising hand gestures from surface electromyography (sEMG) with a classic
+DSP + machine-learning pipeline.**
 
-## 📋 Overview
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-orange.svg)](https://scikit-learn.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-This project implements a complete pipeline for processing and classifying EMG signals:
-
-1. **Data Loading** - Load multi-channel EMG data from MATLAB `.mat` files
-2. **Preprocessing** - Apply high-pass Butterworth filtering to remove low-frequency noise
-3. **Trial Segmentation** - Segment continuous data into individual movement trials based on stimulus changes
-4. **Feature Extraction** - Extract features in both time-domain and frequency-domain
-5. **Classification** - Use KNN classifier with Leave-One-Out Cross-Validation
-6. **Optimization** - Find optimal K value and best-performing channel/method
-
-## 🔬 Feature Extraction Methods
-
-### Time-Domain Features
-- Mean Absolute Value (MAV)
-- Root Mean Square (RMS)
-- Zero Crossings (ZC)
-- Slope Sign Changes (SSC)
-- Raw signal flattening
-
-### Frequency-Domain Features
-- Mean Frequency (MNF)
-- Median Frequency (MDF)
-- Power Spectral Density analysis via FFT
-
-### Combined Features
-- Concatenation of time and frequency domain features for enhanced classification
-
-## 📊 Results
-
-The project achieves high classification accuracy across three test subjects:
-
-| Subject | Best Method | Best Accuracy |
-|---------|-------------|---------------|
-| 1 | All Channels (Time) | 95% |
-| 2 | All Channels (Frequency) | 100% |
-| 3 | All Channels (Time/Freq) | 100% |
-
-**Key Findings:**
-- Frequency-domain features consistently outperform time-domain features for single-channel classification
-- Combining data from all channels significantly improves classification performance
-- Lower K values (K=1-3) generally yield better results with this dataset
-
-## 🛠️ Installation
-
-### Prerequisites
-- Python 3.8+
-- pip package manager
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/EMG-Signal-Classification.git
-cd EMG-Signal-Classification
-
-# Create virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-## 🚀 Usage
-
-### Basic Usage
-
-```bash
-# Run the main classification script
-python pythonProject/main.py
-```
-
-### Using Alternative Scripts
-
-```bash
-# Run with different analysis approach
-python g.py
-```
-
-### Analyzing Different Subjects
-
-Modify the file path in the main script to analyze different subjects:
-
-```python
-emg, stimulus = load_data_from_mat('subject1.mat')  # Change to subject2.mat or subject3.mat
-```
-
-## 📁 Project Structure
+This project takes raw multi-channel sEMG recordings, conditions them with
+digital filters, slices them into windows, extracts time- and frequency-domain
+features, and classifies the underlying muscle-activation pattern (rest vs. two
+hand gestures). It reaches **95–100 % leave-one-out accuracy** across three
+subjects and quantifies *how much* the signal-conditioning front end actually
+matters.
 
 ```
-EMG-Signal-Classification/
-├── pythonProject/
-│   └── main.py              # Main classification script
-├── Project Dataset/
-│   ├── subject_1.mat        # EMG data for subject 1
-│   ├── subject_2.mat        # EMG data for subject 2
-│   └── subject_3.mat        # EMG data for subject 3
-├── subject1.mat             # EMG data (alternative location)
-├── subject2.mat
-├── subject3.mat
-├── g.py                     # Alternative analysis script
-├── results.txt              # Detailed classification results
-├── classification_results.csv  # Summary results in CSV format
-├── docs/
-│   ├── DSP_Project.pdf      # Project documentation
-│   ├── EMG.pdf              # EMG background information
-│   └── Project Description.pdf
-├── requirements.txt         # Python dependencies
-├── .gitignore
-└── README.md
+load .mat  →  band-pass / notch filter  →  windowed segmentation
+           →  time + frequency features  →  ML classifier (LOOCV)
 ```
-
-## 📈 Data Format
-
-The project expects MATLAB `.mat` files containing:
-- `emg`: 2D array of EMG signals (samples × channels)
-- `stimulus`: 1D array of movement labels
-- `subject`: Subject identifier
-
-**Signal Parameters:**
-- Sampling Rate: 100 Hz
-- Number of Channels: 10 electrodes
-- Trial Duration: ~5 seconds per movement
-
-## 🔧 Configuration
-
-Key parameters that can be modified:
-
-```python
-# High-pass filter settings
-cutoff_frequency = 10  # Hz
-filter_order = 4
-sampling_rate = 100  # Hz
-
-# KNN settings
-k_range = range(1, 20)  # K values to evaluate
-
-# Trial segmentation
-trial_duration = 5  # seconds
-```
-
-## 📚 Methods Explained
-
-### Method 1: Single Channel Time-Domain
-Evaluates each electrode independently using raw EMG data as features.
-
-### Method 2: Single Channel Frequency-Domain
-Transforms EMG signals to frequency domain using FFT and extracts spectral features.
-
-### Method 3: Combined All-Channels
-Concatenates features from all 10 electrodes for comprehensive classification.
-
-## 🎓 Academic Context
-
-This project was developed for **CSCE3611 - Digital Signal Processing** at The American University in Cairo.
-
-**Contributors:**
-- Adham Ali
-- Omar Saqr
-- Saif Abdelfattah
-
-**Supervised by:** Dr. Seif Eldawlatly
-
-## 📄 License
-
-This project is for educational purposes. Please contact the authors for usage rights.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Contact
-
-For questions or collaboration opportunities, please open an issue on this repository.
 
 ---
 
-*Last updated: December 2024*
+## Results at a glance
+
+**Per-subject accuracy** (3-class: rest / gesture 1 / gesture 2, leave-one-trial-out CV):
+
+| Subject | Time-domain | Frequency-domain | Combined |
+|:------:|:-----------:|:----------------:|:--------:|
+| 1 | 0.975 | 0.950 | 0.950 |
+| 2 | 1.000 | 1.000 | 1.000 |
+| 3 | 1.000 | 1.000 | 1.000 |
+
+<p align="center">
+  <img src="results/figures/accuracy_summary.png" width="520" alt="Accuracy by feature domain">
+</p>
+
+### The signal-conditioning front end is what moves the needle
+
+Two ablations show that the DSP front end — not the classifier — drives
+performance. Filtering out drift/motion artefacts lifts mean accuracy from
+**0.87 → 0.98**, and a window must be long enough (~2.5 s) to capture a stable
+muscle contraction.
+
+<p align="center">
+  <img src="results/figures/experiment_filters.png" width="420" alt="Filter design vs accuracy">
+  <img src="results/figures/experiment_windows.png" width="420" alt="Window length vs accuracy">
+</p>
+
+| Front end | Mean acc. | | Window | Mean acc. |
+|:--|:--:|---|:--:|:--:|
+| No filter | 0.867 | | 1.0 s | 0.700 |
+| High-pass (10 Hz) | 0.975 | | 1.5 s | 0.867 |
+| Band-pass (10–45 Hz) | 0.983 | | 2.0 s | 0.942 |
+| Band-pass + notch | 0.983 | | 2.5–3.0 s | 0.983 |
+
+By contrast, the choice of classifier barely matters once features are good:
+KNN, SVM and Random Forest all reach **0.983**, LDA **0.967**
+([`experiment_classifiers.png`](results/figures/experiment_classifiers.png)).
+
+> All numbers above are reproduced by `scripts/run_classification.py` and
+> `scripts/run_experiments.py`; the CSVs and figures live in [`results/`](results/).
+
+---
+
+## How it works
+
+### 1. Signal conditioning — [`emg/preprocessing.py`](emg/preprocessing.py)
+Zero-phase Butterworth filters (`filtfilt`, no group delay):
+- **Band-pass 10–45 Hz** (default) keeps the EMG band while rejecting baseline
+  drift and motion artefacts.
+- **High-pass** and an **IIR notch** are also provided. *Note:* the dataset is
+  sampled at 100 Hz, so its Nyquist is 50 Hz — a 50 Hz mains notch sits at
+  Nyquist and is a no-op here; the band-pass already removes it. The notch is
+  kept for higher-rate recordings.
+
+### 2. Windowed segmentation — [`emg/segmentation.py`](emg/segmentation.py)
+The stimulus channel is piece-wise constant; each contiguous run is one
+repetition. A fixed-length window (default 3.0 s) is cut from the start of every
+repetition so all trials share the same dimensionality.
+
+### 3. Feature extraction — [`emg/features.py`](emg/features.py)
+Computed per channel and concatenated:
+
+| Domain | Features |
+|---|---|
+| **Time** | Mean Absolute Value (MAV), Root Mean Square (RMS), Waveform Length (WL), Zero Crossings (ZC), Slope Sign Changes (SSC) |
+| **Frequency** | Mean Frequency (MNF), Median Frequency (MDF), Total Spectral Power, Peak Frequency |
+
+### 4. Classification — [`emg/classification.py`](emg/classification.py)
+KNN (with a K sweep), SVM, Random Forest and LDA, each wrapped in a
+`StandardScaler → estimator` pipeline. Standardisation is fitted **inside** each
+CV fold to prevent test-set leakage. Evaluation is **leave-one-trial-out
+cross-validation**, the natural low-variance estimator for this small dataset.
+
+---
+
+## Quickstart
+
+```bash
+git clone https://github.com/omarsaqr12/EMG-Signal-Classification.git
+cd EMG-Signal-Classification
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+python scripts/run_classification.py   # headline results + confusion matrices
+python scripts/run_experiments.py      # filter / window / classifier ablations
+```
+
+Using the library directly:
+
+```python
+from emg import load_subject, apply_filter, segment_trials, extract_feature_matrix
+from emg.classification import best_k
+
+sub      = load_subject(1)
+filtered = apply_filter(sub.emg, kind="bandpass", fs=sub.fs)
+trials   = segment_trials(filtered, sub.stimulus, window_samples=300)
+X, y     = extract_feature_matrix(trials, fs=sub.fs, domain="combined")
+
+k, acc, _ = best_k(X, y)
+print(f"Best K={k}, leave-one-out accuracy={acc:.3f}")
+```
+
+---
+
+## Dataset
+
+Three subjects (`data/subject_{1,2,3}.mat`), each a continuous recording:
+
+| Field | Shape | Meaning |
+|---|---|---|
+| `emg` | `(16782, 10)` | 10-channel sEMG amplitudes |
+| `stimulus` | `(16782,)` | label per sample — `0` rest, `1`/`2` gestures |
+| `subject` | scalar | subject id |
+
+Sampling rate **100 Hz**; 40 repetitions per subject (20 rest, 10 + 10 gestures).
+
+---
+
+## Project structure
+
+```
+EMG-Signal-Classification/
+├── emg/                       # reusable library
+│   ├── io.py                  #   load .mat recordings
+│   ├── preprocessing.py       #   band-pass / high-pass / notch
+│   ├── segmentation.py        #   windowed trial segmentation
+│   ├── features.py            #   time- & frequency-domain features
+│   └── classification.py      #   classifiers + leave-one-out CV
+├── scripts/
+│   ├── run_classification.py  # headline accuracy + confusion matrices
+│   └── run_experiments.py     # filter / window / classifier ablations
+├── data/                      # subject_1.mat … subject_3.mat
+├── results/                   # generated CSVs + figures
+├── docs/                      # project report & background PDFs
+├── legacy/                    # original course submission scripts
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Academic context
+
+Developed for **CSCE 3611 – Digital Signal Processing** at The American
+University in Cairo (supervised by Dr. Seif Eldawlatly). The
+[`legacy/`](legacy/) folder preserves the original course scripts; the `emg/`
+package is a cleaned-up, modular reimplementation with added feature extraction,
+multiple classifiers and reproducible ablation studies.
+
+**Authors:** Omar Saqr · Adham Ali · Saif Abdelfattah
+
+## License
+
+Released under the [MIT License](LICENSE).

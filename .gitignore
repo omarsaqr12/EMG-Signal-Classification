@@ -65,8 +65,8 @@ Thumbs.db
 # Log files
 *.log
 
-# Data files (uncomment if you don't want to track large data files)
-# *.mat
-
 # Matplotlib cache
 .matplotlib/
+
+# Note: data/*.mat and results/ figures are intentionally tracked so the
+# repository is reproducible and the README renders without a local run.

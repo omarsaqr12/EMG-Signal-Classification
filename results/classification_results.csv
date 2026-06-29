@@ -1,0 +1,10 @@
+subject,domain,best_k,accuracy,n_trials
+1,time,1,0.975,40
+1,frequency,3,0.95,40
+1,combined,3,0.95,40
+2,time,1,1.0,40
+2,frequency,11,1.0,40
+2,combined,3,1.0,40
+3,time,1,1.0,40
+3,frequency,1,1.0,40
+3,combined,1,1.0,40
