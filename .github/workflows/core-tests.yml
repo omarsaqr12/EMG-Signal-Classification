@@ -1,0 +1,42 @@
+name: EMG core checks
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile modified scripts and tests
+        run: python -m py_compile scripts/run_fixed_k_sensitivity.py scripts/run_nested_cv.py tests/test_core.py tests/test_nested_cv.py
+      - name: Run synthetic-data regression checks
+        run: python -m unittest discover -s tests -v
+      - name: Evaluate nested CV on bundled subject recordings
+        run: python scripts/run_nested_cv.py --output /tmp/emg-nested-cv-results.csv
+      - name: Evaluate fixed-K sensitivity on bundled subject recordings
+        run: python scripts/run_fixed_k_sensitivity.py --k 5 --output /tmp/emg-fixed-k-results.csv
+      - name: Verify committed evaluation CSVs against fresh reruns
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+          for name, generated in [
+              ('nested_cv_results.csv', '/tmp/emg-nested-cv-results.csv'),
+              ('fixed_k_sensitivity.csv', '/tmp/emg-fixed-k-results.csv'),
+          ]:
+              with (Path('results') / name).open(newline='') as file:
+                  committed = list(csv.DictReader(file))
+              with open(generated, newline='') as file:
+                  rerun = list(csv.DictReader(file))
+              assert committed == rerun, f'{name}: committed output does not match fresh rerun'
+              assert len(rerun) == 9, f'{name}: expected nine subject/domain rows'
+              print(f'{name}: all nine rows exactly match freshly computed metrics')
+          PY
