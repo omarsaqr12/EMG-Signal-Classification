@@ -1,0 +1,21 @@
+name: EMG core checks
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile modified script and tests
+        run: python -m py_compile scripts/run_fixed_k_sensitivity.py tests/test_core.py
+      - name: Run synthetic-data regression checks
+        run: python -m unittest discover -s tests -v
