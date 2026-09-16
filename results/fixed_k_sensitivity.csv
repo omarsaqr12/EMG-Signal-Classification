@@ -1,0 +1,10 @@
+subject,domain,k,accuracy,n_trials
+1,time,5,0.95,40
+1,frequency,5,0.925,40
+1,combined,5,0.925,40
+2,time,5,1.0,40
+2,frequency,5,0.95,40
+2,combined,5,1.0,40
+3,time,5,1.0,40
+3,frequency,5,1.0,40
+3,combined,5,1.0,40
